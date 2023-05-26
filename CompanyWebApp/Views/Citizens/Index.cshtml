@@ -1,0 +1,88 @@
+﻿@model IEnumerable<CompanyWebApp.Models.Citizen>
+
+@{
+    ViewData["Title"] = "Громадяни";
+}
+
+<h1>Список громадян</h1>
+
+<p>
+    <a asp-action="Create">Додати</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Passport)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdentifyCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Age)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Street)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoHouse)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoFlat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Education)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Country)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Passport)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdentifyCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Street)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoHouse)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoFlat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Education)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Country.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Змінити</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Видалити</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

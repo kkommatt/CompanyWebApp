@@ -1,0 +1,77 @@
+﻿@model CompanyWebApp.Models.Citizen
+
+@{
+    ViewData["Title"] = "Створити";
+}
+
+<h1>Додати</h1>
+
+<h4>Громадянина</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Passport" class="control-label"></label>
+                <input asp-for="Passport" class="form-control" />
+                <span asp-validation-for="Passport" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdentifyCode" class="control-label"></label>
+                <input asp-for="IdentifyCode" class="form-control" />
+                <span asp-validation-for="IdentifyCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Street" class="control-label"></label>
+                <input asp-for="Street" class="form-control" />
+                <span asp-validation-for="Street" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NoHouse" class="control-label"></label>
+                <input asp-for="NoHouse" class="form-control" />
+                <span asp-validation-for="NoHouse" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NoFlat" class="control-label"></label>
+                <input asp-for="NoFlat" class="form-control" />
+                <span asp-validation-for="NoFlat" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Education" class="control-label"></label>
+                <input asp-for="Education" class="form-control" />
+                <span asp-validation-for="Education" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryId" class="control-label"></label>
+                <select asp-for="CountryId" class ="form-control" asp-items="ViewBag.CountryId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Додати" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Повернутися назад</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
