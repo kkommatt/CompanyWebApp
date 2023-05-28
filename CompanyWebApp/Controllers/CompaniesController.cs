@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CompanyWebApp.Models;
+using System.Data.SqlClient;
 
 namespace CompanyWebApp.Controllers
 {
     public class CompaniesController : Controller
     {
         private readonly ItcompanyDbContext _context;
+
+        public const string connectionString = "Server=(LocalDb)\\MSSQLLocalDB;Database=ITCompanyDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
         public CompaniesController(ItcompanyDbContext context)
         {
@@ -21,10 +24,70 @@ namespace CompanyWebApp.Controllers
         // GET: Companies
         public async Task<IActionResult> Index()
         {
-            var itcompanyDbContext = _context.Companies.Include(c => c.Country);
-            return View(await itcompanyDbContext.ToListAsync());
-        }
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT Companies.Id, Companies.Name, Companies.City, Companies.Street, Companies.Header, " +
+                               "Companies.StaffCount, Companies.CountryId, Companies.Website, Companies.Email, Companies.Edrpou, " +
+                               "Countries.Name AS CountryName " +
+                               "FROM Companies " +
+                               "INNER JOIN Countries ON Companies.CountryId = Countries.Id";
 
+                SqlCommand command = new SqlCommand(query, connection);
+                List<Company> companies = new List<Company>();
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        int companyId = reader.GetInt32(0);
+                        string companyName = reader.GetString(1);
+                        string city = reader.GetString(2);
+                        string street = reader.GetString(3);
+                        string header = reader.GetString(4);
+                        int staffCount = reader.GetInt32(5);
+                        int countryId = reader.GetInt32(6);
+                        string website = reader.GetString(7);
+                        string email = reader.GetString(8);
+                        int edrpou = reader.GetInt32(9);
+                        string countryName = reader.GetString(10);
+
+                        Company company = new Company
+                        {
+                            Id = companyId,
+                            Name = companyName,
+                            City = city,
+                            Street = street,
+                            Header = header,
+                            StaffCount = staffCount,
+                            CountryId = countryId,
+                            Website = website,
+                            Email = email,
+                            Edrpou = edrpou,
+                            Country = new Country
+                            {
+                                Id = countryId,
+                                Name = countryName
+                            }
+                        };
+
+                        companies.Add(company);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                return View(companies);
+            }
+
+        }
+        /*
         // GET: Companies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -43,12 +106,48 @@ namespace CompanyWebApp.Controllers
 
             return View(company);
         }
-
+        */
         // GET: Companies/Create
         public IActionResult Create()
         {
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id");
-            return View();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT Id, Name FROM Countries";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                List<SelectListItem> countryList = new List<SelectListItem>();
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        int countryId = reader.GetInt32(0);
+                        string countryName = reader.GetString(1);
+
+                        SelectListItem countryItem = new SelectListItem
+                        {
+                            Value = countryId.ToString(),
+                            Text = countryName
+                        };
+
+                        countryList.Add(countryItem);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                ViewData["CountryId"] = new SelectList(countryList, "Value", "Text");
+                return View();
+            }
+
         }
 
         // POST: Companies/Create
@@ -60,28 +159,121 @@ namespace CompanyWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(company);
-                await _context.SaveChangesAsync();
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    string query = "INSERT INTO Companies (Name, City, Street, Header, StaffCount, CountryId, Website, Email, Edrpou) " +
+                                   "VALUES (@Name, @City, @Street, @Header, @StaffCount, @CountryId, @Website, @Email, @Edrpou)";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Name", company.Name);
+                    command.Parameters.AddWithValue("@City", company.City);
+                    command.Parameters.AddWithValue("@Street", company.Street);
+                    command.Parameters.AddWithValue("@Header", company.Header);
+                    command.Parameters.AddWithValue("@StaffCount", company.StaffCount);
+                    command.Parameters.AddWithValue("@CountryId", company.CountryId);
+                    command.Parameters.AddWithValue("@Website", company.Website);
+                    command.Parameters.AddWithValue("@Email", company.Email);
+                    command.Parameters.AddWithValue("@Edrpou", company.Edrpou);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", company.CountryId);
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string countryQuery = "SELECT Id, Name FROM Countries";
+                SqlCommand countryCommand = new SqlCommand(countryQuery, connection);
+
+                await connection.OpenAsync();
+
+                using (SqlDataReader reader = await countryCommand.ExecuteReaderAsync())
+                {
+                    List<SelectListItem> countries = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        int countryId = reader.GetInt32(0);
+                        string countryName = reader.GetString(1);
+                        countries.Add(new SelectListItem { Value = countryId.ToString(), Text = countryName });
+                    }
+
+                    ViewData["CountryId"] = new SelectList(countries, "Value", "Text", company.CountryId);
+                }
+            }
+
             return View(company);
         }
 
         // GET: Companies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Companies == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Companies.FindAsync(id);
+            Company company = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT Id, Name, City, Street, Header, StaffCount, CountryId, Website, Email, Edrpou FROM Companies WHERE Id = @Id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", id);
+
+                await connection.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (reader.Read())
+                    {
+                        company = new Company
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            City = reader.GetString(2),
+                            Street = reader.GetString(3),
+                            Header = reader.GetString(4),
+                            StaffCount = reader.GetInt32(5),
+                            CountryId = reader.GetInt32(6),
+                            Website = reader.GetString(7),
+                            Email = reader.GetString(8),
+                            Edrpou = reader.GetInt32(9)
+                        };
+                    }
+                }
+            }
+
             if (company == null)
             {
                 return NotFound();
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", company.CountryId);
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string countryQuery = "SELECT Id, Name FROM Countries";
+                SqlCommand countryCommand = new SqlCommand(countryQuery, connection);
+
+                await connection.OpenAsync();
+
+                using (SqlDataReader reader = await countryCommand.ExecuteReaderAsync())
+                {
+                    List<SelectListItem> countries = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        int countryId = reader.GetInt32(0);
+                        string countryName = reader.GetString(1);
+                        countries.Add(new SelectListItem { Value = countryId.ToString(), Text = countryName });
+                    }
+
+                    ViewData["CountryId"] = new SelectList(countries, "Value", "Text", company.CountryId);
+                }
+            }
+
             return View(company);
         }
 
@@ -99,45 +291,117 @@ namespace CompanyWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    _context.Update(company);
-                    await _context.SaveChangesAsync();
+                    string query = "UPDATE Companies SET Name = @Name, City = @City, Street = @Street, Header = @Header, StaffCount = @StaffCount, CountryId = @CountryId, Website = @Website, Email = @Email, Edrpou = @Edrpou WHERE Id = @Id";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Id", company.Id);
+                    command.Parameters.AddWithValue("@Name", company.Name);
+                    command.Parameters.AddWithValue("@City", company.City);
+                    command.Parameters.AddWithValue("@Street", company.Street);
+                    command.Parameters.AddWithValue("@Header", company.Header);
+                    command.Parameters.AddWithValue("@StaffCount", company.StaffCount);
+                    command.Parameters.AddWithValue("@CountryId", company.CountryId);
+                    command.Parameters.AddWithValue("@Website", company.Website);
+                    command.Parameters.AddWithValue("@Email", company.Email);
+                    command.Parameters.AddWithValue("@Edrpou", company.Edrpou);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CompanyExists(company.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", company.CountryId);
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string countryQuery = "SELECT Id, Name FROM Countries";
+                SqlCommand countryCommand = new SqlCommand(countryQuery, connection);
+
+                await connection.OpenAsync();
+
+                using (SqlDataReader reader = await countryCommand.ExecuteReaderAsync())
+                {
+                    List<SelectListItem> countries = new List<SelectListItem>();
+
+                    while (reader.Read())
+                    {
+                        int countryId = reader.GetInt32(0);
+                        string countryName = reader.GetString(1);
+                        countries.Add(new SelectListItem { Value = countryId.ToString(), Text = countryName });
+                    }
+
+                    ViewData["CountryId"] = new SelectList(countries, "Value", "Text", company.CountryId);
+                }
+            }
+
             return View(company);
         }
 
         // GET: Companies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Companies == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Companies
-                .Include(c => c.Country)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (company == null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return NotFound();
+                string query = "SELECT c.Id, c.Name, c.City, c.Street, c.Header, c.StaffCount, c.CountryId, c.Website, c.Email, c.Edrpou, cn.Id, cn.Name " +
+                               "FROM Companies c " +
+                               "INNER JOIN Countries cn ON c.CountryId = cn.Id " +
+                               "WHERE c.Id = @Id";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Id", id);
+
+                await connection.OpenAsync();
+
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (reader.Read())
+                    {
+                        int companyId = reader.GetInt32(0);
+                        string companyName = reader.GetString(1);
+                        string city = reader.GetString(2);
+                        string street = reader.GetString(3);
+                        string header = reader.GetString(4);
+                        int staffCount = reader.GetInt32(5);
+                        int countryId = reader.GetInt32(6);
+                        string website = reader.GetString(7);
+                        string email = reader.GetString(8);
+                        int edrpou = reader.GetInt32(9);
+                        int countryId1 = reader.GetInt32(10);
+                        string countryName = reader.GetString(11);
+
+                        Company company = new Company
+                        {
+                            Id = companyId,
+                            Name = companyName,
+                            City = city,
+                            Street = street,
+                            Header = header,
+                            StaffCount = staffCount,
+                            CountryId = countryId1,
+                            Website = website,
+                            Email = email,
+                            Edrpou = edrpou,
+                            Country = new Country
+                            {
+                                Id = countryId,
+                                Name = countryName
+                            }
+                        };
+
+                        ViewData["CountryId"] = new SelectList(_context.Countries, "Id", "Id", company.CountryId);
+                        return View(company);
+                    }
+                }
             }
 
-            return View(company);
+            return NotFound();
         }
 
         // POST: Companies/Delete/5
@@ -145,23 +409,43 @@ namespace CompanyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Companies == null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return Problem("Entity set 'ItcompanyDbContext.Companies'  is null.");
+                string deleteQuery = "DELETE FROM Companies WHERE Id = @Id";
+
+                using (SqlCommand deleteCommand = new SqlCommand(deleteQuery, connection))
+                {
+                    deleteCommand.Parameters.AddWithValue("@Id", id);
+
+                    await connection.OpenAsync();
+                    int rowsAffected = await deleteCommand.ExecuteNonQueryAsync();
+
+                    if (rowsAffected > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
             }
-            var company = await _context.Companies.FindAsync(id);
-            if (company != null)
-            {
-                _context.Companies.Remove(company);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NotFound();
         }
 
         private bool CompanyExists(int id)
         {
-          return _context.Companies.Any(e => e.Id == id);
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string existsQuery = "SELECT COUNT(*) FROM Companies WHERE Id = @Id";
+
+                using (SqlCommand existsCommand = new SqlCommand(existsQuery, connection))
+                {
+                    existsCommand.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+                    int count = (int)existsCommand.ExecuteScalar();
+
+                    return count > 0;
+                }
+            }
         }
     }
 }
