@@ -1,0 +1,32 @@
+﻿@model List<Query8ResultViewModel>
+
+<h1>Прізвище програмістів та назви їх компаній, які мають хоча б одного колегу</h1>
+<h4>
+    SELECT DISTINCT ct.FullName AS ProgrammerName, c.Name AS CompanyName 
+    FROM Citizens ct 
+    INNER JOIN Companies c ON ct.CompanyId = c.Id 
+    WHERE EXISTS (
+    SELECT * 
+    FROM Citizens ct2 
+    WHERE ct2.CompanyId = c.Id 
+    AND ct2.Id <> ct.Id);
+</h4>
+
+<table>
+    <thead>
+        <tr>
+            <th>Programmer Name</th>
+            <th>Company Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProgrammerName</td>
+                <td>@item.CompanyName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

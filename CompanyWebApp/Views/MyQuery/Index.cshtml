@@ -1,5 +1,61 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model MyQueryViewModel
+<div>
+<h4>Компанії, що розташовані у вказаній країні і мають принаймні одного програміста</h4>
+<form method="post" asp-action="Execute1">
+    <label for="parameterStringValue">Введіть значення параметру:</label>
+    <input type="text" id="parameterStringValue" name="ParameterStringValue" />
+    <button type="submit">Виконати запит</button>
+</form>
+</div>
+<div>
+<h4>Країни, в яких проживають програмісти, що мають досвід роботи більше вказаної користувачем кількості років</h4>
+<form method="post" asp-action="Execute2">
+    <label for="parameterIntValue">Введіть значення параметру:</label>
+    <input type="number" id="parameterIntValue" name="ParameterIntValue" />
+    <button type="submit">Виконати запит</button>
+</form>
+</div>
+<div>
+    <h4>Продукти, випущені після вказаної користувачем дати, разом з назвами компаній, які їх виробляють</h4>
+    <form method="post" asp-action="Execute3">
+        <label for="parameterStringValue">Введіть значення параметру(2020-01-01):</label>
+        <input type="text" id="parameterStringValue" name="ParameterStringValue" />
+        <button type="submit">Виконати запит</button>
+    </form>
+</div>
+<div>
+    <h4>Програмісти та їх спеціалізація, які працюють у певній компанії з кількістю працівників більшою за введене користувачем число</h4>
+    <form method="post" asp-action="Execute4">
+        <label for="parameterIntValue">Введіть значення параметру:</label>
+        <input type="number" id="parameterIntValue" name="ParameterIntValue" />
+        <button type="submit">Виконати запит</button>
+    </form>
+</div>
+<div>
+    <h4>Країни, які мають компанії з вказаною кількістю продуктів</h4>
+    <form method="post" asp-action="Execute5">
+        <label for="parameterIntValue">Введіть значення параметру:</label>
+        <input type="number" id="parameterIntValue" name="ParameterIntValue" />
+        <button type="submit">Виконати запит</button>
+    </form>
+</div>
+<div>
+    <h4>Імена програмістів, які працюють в тих компаніях  і тільки тих, що й громадянин з введеним Id</h4>
+    <form method="post" asp-action="Execute6">
+        <label for="parameterIntValue">Введіть значення параметру:</label>
+        <input type="number" id="parameterIntValue" name="ParameterIntValue" />
+        <button type="submit">Виконати запит</button>
+    </form>
+</div>
+<div>
+    <h4>Країни, всі громадяни яких є програмістами через множинне порівняння</h4>
+    <form method="post" asp-action="Execute7">
+        <button type="submit">Виконати запит</button>
+    </form>
+</div>
+<div>
+    <h4>Прізвище програмістів та назви їх компаній, які мають хоча б одного колегу</h4>
+    <form method="post" asp-action="Execute8">
+        <button type="submit">Виконати запит</button>
+    </form>
+</div>

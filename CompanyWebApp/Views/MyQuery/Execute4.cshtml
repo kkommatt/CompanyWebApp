@@ -1,0 +1,22 @@
+﻿@model List<Query4ResultViewModel>
+
+<h1>Програмісти та їх спеціалізація, які працюють у певній компанії з кількістю працівників більшою за введене користувачем число</h1>
+<h4>SELECT ct.FullName AS ProgrammerName, p.Specialization, c.Name AS CompanyName, c.StaffCount AS EmployeeCount FROM Programmers p INNER JOIN Citizens ct ON p.CitizenId = ct.Id INNER JOIN Companies c ON p.CompanyId = c.Id WHERE c.StaffCount > employeeCountThreshold;
+</h4>
+<table>
+    <tr>
+        <th>Programmer Name</th>
+        <th>Specialization</th>
+        <th>Company Name</th>
+        <th>Employee Count</th>
+    </tr>
+    @foreach (var result in Model)
+    {
+        <tr>
+            <td>@result.ProgrammerName</td>
+            <td>@result.Specialization</td>
+            <td>@result.CompanyName</td>
+            <td>@result.EmployeeCount</td>
+        </tr>
+    }
+</table>

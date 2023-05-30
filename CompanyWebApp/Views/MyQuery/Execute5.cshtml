@@ -1,0 +1,21 @@
+﻿@model List<Query5ResultViewModel>
+
+<h1>Країни, які мають компанії з вказаною кількістю продуктів</h1>
+<h4> SELECT c.Name AS CompanyName, p.Name AS ProductName, co.Name AS CountryName FROM Countries co INNER JOIN Companies c ON co.Id = c.CountryId INNER JOIN Products p ON c.Id = p.CompanyId GROUP BY co.Name, c.Name, p.Name HAVING COUNT(p.Id) >= productCount;
+</h4>
+
+<table>
+    <tr>
+        <th>Country</th>
+        <th>Company</th>
+        <th>Product</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CountryName</td>
+            <td>@item.CompanyName</td>
+            <td>@item.ProductName</td>
+        </tr>
+    }
+</table>

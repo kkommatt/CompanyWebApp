@@ -1,6 +1,9 @@
-﻿namespace CompanyWebApp.Models
+﻿
+namespace CompanyWebApp.Models
 {
-    public class QueryViewModel
+    public class MyQueryViewModel
     {
+        public int? ParameterIntValue { get; set; } = null;
+        public string? ParameterStringValue { get; set; } = null;
     }
 }

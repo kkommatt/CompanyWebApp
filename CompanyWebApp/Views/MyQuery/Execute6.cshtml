@@ -1,0 +1,23 @@
+﻿@model List<Query6ResultViewModel>
+
+<h1>Імена програмiстів, які працюють в тих компаніях  і тільки тих, що й громадянин з введеним Id</h1>
+<h4>string query = SELECT DISTINCT ct.FullName AS CitizenName 
+                   FROM Programmers p 
+                   INNER JOIN Companies c ON p.CompanyId = c.Id 
+                   INNER JOIN Citizens ct ON p.CitizenId = ct.Id 
+                   WHERE c.Id IN (SELECT CompanyId 
+                                  "FROM Programmers 
+                                  "WHERE CitizenId = enteredId);
+</h4>
+
+    <table>
+        <tr>
+            <th>Programmer</th>
+        </tr>
+        @foreach (var programmer in Model)
+        {
+            <tr>
+                <td>@programmer.ProgrammerName</td>
+            </tr>
+        }
+    </table>

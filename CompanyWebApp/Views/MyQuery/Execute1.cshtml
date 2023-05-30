@@ -1,0 +1,27 @@
+﻿@model List<CompanyProgrammerViewModel>
+@{
+    ViewData["Title"] = "Запит1";
+}
+
+<h1>Компанії, що розташовані у вказаній країні і мають принаймні одного програміста</h1>
+<h4>
+    SELECT c.Name AS CompanyName, ct.FullName AS ProgrammerName FROM Companies c INNER JOIN Programmers p ON c.Id = p.CompanyId INNER JOIN Citizens ct ON p.CitizenId = ct.Id INNER JOIN Countries co ON ct.CountryId = co.Id WHERE co.Name = countryName;
+</h4>
+
+<table>
+    <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>Programmer Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CompanyName</td>
+                <td>@item.ProgrammerName</td>
+            </tr>
+        }
+    </tbody>
+</table>
