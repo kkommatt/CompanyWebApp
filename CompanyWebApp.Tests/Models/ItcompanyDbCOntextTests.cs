@@ -46,9 +46,9 @@ namespace CompanyWebApp.Tests
             using (var context = new ItcompanyDbContext(_options))
             {
                 // Perform test queries or actions here
-                var companies = context.Companies.ToList();
+                var countries = context.Countries.ToList();
 
-                Assert.IsNotNull(companies);
+                Assert.IsNotNull(countries);
                 
             }
         }
