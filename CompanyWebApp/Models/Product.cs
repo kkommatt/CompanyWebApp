@@ -49,4 +49,6 @@ public partial class Product
     public int CompanyId { get; set; }
 
     public virtual Company Company { get; set; } = null!;
+    public List<ProgrammerProduct> ProgrammerProducts { get; set; }
+    public IEnumerable<Programmer> Programmers => ProgrammerProducts?.Select(pp => pp.Programmer).ToList();
 }

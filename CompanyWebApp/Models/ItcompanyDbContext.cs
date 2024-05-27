@@ -100,7 +100,6 @@ public partial class ItcompanyDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Programmers_Companies");
         });
-
         OnModelCreatingPartial(modelBuilder);
     }
 

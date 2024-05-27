@@ -47,4 +47,6 @@ public partial class Programmer
     public virtual Citizen Citizen { get; set; } = null!;
 
     public virtual Company Company { get; set; } = null!;
+    public List<ProgrammerProduct> ProgrammerProducts { get; set; }
+    public IEnumerable<Product> Products => ProgrammerProducts?.Select(pp => pp.Product).ToList();
 }

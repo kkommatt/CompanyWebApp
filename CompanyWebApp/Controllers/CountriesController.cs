@@ -6,15 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CompanyWebApp.Models;
-using System.Data.SqlClient;
 
 namespace CompanyWebApp.Controllers
 {
     public class CountriesController : Controller
     {
         private readonly ItcompanyDbContext _context;
-
-        public const string connectionString = "Server=(LocalDb)\\MSSQLLocalDB;Database=ITCompanyDB;Trusted_Connection=True;MultipleActiveResultSets=true";
 
         public CountriesController(ItcompanyDbContext context)
         {
@@ -24,42 +21,10 @@ namespace CompanyWebApp.Controllers
         // GET: Countries
         public async Task<IActionResult> Index()
         {
-            List<Country> countries = new List<Country>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string query = "SELECT * FROM Countries";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    connection.Open();
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Country country = new Country
-                            {
-                                Id = (int)reader["Id"],
-                                Name = (string)reader["Name"],
-                                Continent = (string)reader["Continent"],
-                                Type = (string)reader["Type"],
-                                Gdp = (int)reader["Gdp"],
-                                Header = (string)reader["Header"],
-                                Capital = (string)reader["Capital"],
-                                Population = (int)reader["Population"],
-                                Currency = (string)reader["Currency"],
-                                Area = (int)reader["Area"]
-                            };
-
-                            countries.Add(country);
-                        }
-                    }
-                }
-            }
-
+            var countries = await _context.Countries.ToListAsync();
             return View(countries);
         }
+
         /*
         // GET: Countries/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -79,6 +44,7 @@ namespace CompanyWebApp.Controllers
             return View(country);
         }
         */
+
         // GET: Countries/Create
         public IActionResult Create()
         {
@@ -94,31 +60,10 @@ namespace CompanyWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    string query = "INSERT INTO Countries (Name, Continent, Type, Gdp, Header, Capital, Population, Currency, Area) " +
-                                   "VALUES (@Name, @Continent, @Type, @Gdp, @Header, @Capital, @Population, @Currency, @Area)";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@Name", country.Name);
-                        command.Parameters.AddWithValue("@Continent", country.Continent);
-                        command.Parameters.AddWithValue("@Type", country.Type);
-                        command.Parameters.AddWithValue("@Gdp", country.Gdp);
-                        command.Parameters.AddWithValue("@Header", country.Header);
-                        command.Parameters.AddWithValue("@Capital", country.Capital);
-                        command.Parameters.AddWithValue("@Population", country.Population);
-                        command.Parameters.AddWithValue("@Currency", country.Currency);
-                        command.Parameters.AddWithValue("@Area", country.Area);
-
-                        connection.Open();
-                        await command.ExecuteNonQueryAsync();
-                    }
-                }
-
+                _context.Add(country);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-
             return View(country);
         }
 
@@ -130,42 +75,12 @@ namespace CompanyWebApp.Controllers
                 return NotFound();
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            var country = await _context.Countries.FindAsync(id);
+            if (country == null)
             {
-                string query = "SELECT * FROM Countries WHERE Id = @Id";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    connection.Open();
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        if (reader.Read())
-                        {
-                            Country country = new Country
-                            {
-                                Id = Convert.ToInt32(reader["Id"]),
-                                Name = reader["Name"].ToString(),
-                                Continent = reader["Continent"].ToString(),
-                                Type = reader["Type"].ToString(),
-                                Gdp = Convert.ToInt32(reader["Gdp"]),
-                                Header = reader["Header"].ToString(),
-                                Capital = reader["Capital"].ToString(),
-                                Population = Convert.ToInt32(reader["Population"]),
-                                Currency = reader["Currency"].ToString(),
-                                Area = Convert.ToInt32(reader["Area"])
-                            };
-
-                            return View(country);
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
-                    }
-                }
+                return NotFound();
             }
+            return View(country);
         }
 
         // POST: Countries/Edit/5
@@ -182,37 +97,24 @@ namespace CompanyWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                try
                 {
-                    string query = "UPDATE Countries SET Name = @Name, Continent = @Continent, Type = @Type, Gdp = @Gdp, Header = @Header, Capital = @Capital, Population = @Population, Currency = @Currency, Area = @Area WHERE Id = @Id";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    _context.Update(country);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CountryExists(country.Id))
                     {
-                        command.Parameters.AddWithValue("@Name", country.Name);
-                        command.Parameters.AddWithValue("@Continent", country.Continent);
-                        command.Parameters.AddWithValue("@Type", country.Type);
-                        command.Parameters.AddWithValue("@Gdp", country.Gdp);
-                        command.Parameters.AddWithValue("@Header", country.Header);
-                        command.Parameters.AddWithValue("@Capital", country.Capital);
-                        command.Parameters.AddWithValue("@Population", country.Population);
-                        command.Parameters.AddWithValue("@Currency", country.Currency);
-                        command.Parameters.AddWithValue("@Area", country.Area);
-                        command.Parameters.AddWithValue("@Id", country.Id);
-
-                        connection.Open();
-                        int rowsAffected = await command.ExecuteNonQueryAsync();
-                        if (rowsAffected > 0)
-                        {
-                            return RedirectToAction(nameof(Index));
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
+                return RedirectToAction(nameof(Index));
             }
-
             return View(country);
         }
 
@@ -224,42 +126,14 @@ namespace CompanyWebApp.Controllers
                 return NotFound();
             }
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            var country = await _context.Countries
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (country == null)
             {
-                string query = "SELECT * FROM Countries WHERE Id = @Id";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    connection.Open();
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        if (reader.Read())
-                        {
-                            Country country = new Country
-                            {
-                                Id = (int)reader["Id"],
-                                Name = (string)reader["Name"],
-                                Continent = (string)reader["Continent"],
-                                Type = (string)reader["Type"],
-                                Gdp = (int)reader["Gdp"],
-                                Header = (string)reader["Header"],
-                                Capital = (string)reader["Capital"],
-                                Population = (int)reader["Population"],
-                                Currency = (string)reader["Currency"],
-                                Area = (int)reader["Area"]
-                            };
-
-                            return View(country);
-                        }
-                        else
-                        {
-                            return NotFound();
-                        }
-                    }
-                }
+                return NotFound();
             }
+
+            return View(country);
         }
 
         // POST: Countries/Delete/5
@@ -267,45 +141,18 @@ namespace CompanyWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            var country = await _context.Countries.FindAsync(id);
+            if (country != null)
             {
-                string query = "DELETE FROM Countries WHERE Id = @Id";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    connection.Open();
-                    int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                    if (rowsAffected > 0)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-                    else
-                    {
-                        return NotFound();
-                    }
-                }
+                _context.Countries.Remove(country);
+                await _context.SaveChangesAsync();
             }
+            return RedirectToAction(nameof(Index));
         }
 
-        private bool CountryExists(int id)
+        public bool CountryExists(int id)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string query = "SELECT COUNT(*) FROM Countries WHERE Id = @Id";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    connection.Open();
-                    int count = (int)command.ExecuteScalar();
-
-                    return count > 0;
-                }
-            }
+            return _context.Countries.Any(e => e.Id == id);
         }
     }
 }
