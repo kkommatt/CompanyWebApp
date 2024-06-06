@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <runtime>
+        <gcConcurrent enabled="true"/>
+    </runtime>
+    <nunit>
+        <settings>
+            <setting name="DefaultTestCaseTimeout" value="30000"/>
+            <setting name="NumberOfTestWorkers" value="1"/>
+        </settings>
+        <test-runner>netcore</test-runner>
+        <test-suites>
+            <test-suite>
+                <include>
+                    <category>ProductsControllerTests</category>
+                </include>
+            </test-suite>
+        </test-suites>
+    </nunit>
+</configuration>

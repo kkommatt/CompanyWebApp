@@ -28,7 +28,7 @@ namespace CompanyWebApp.Tests
             // Seed the database with initial data
             _context.Countries.Add(new Country
             {
-                Id = 1,
+                Id = 3,
                 Name = "Test Country",
                 Continent = "Test Continent",
                 Type = "Test Type",
@@ -116,7 +116,7 @@ namespace CompanyWebApp.Tests
                 Street = "New Street",
                 Header = "New Header",
                 StaffCount = 150,
-                CountryId = 1,
+                CountryId = 3,
                 Website = "http://newcompany.com",
                 Email = "info@newcompany.com",
                 Edrpou = 56781234
@@ -139,7 +139,7 @@ namespace CompanyWebApp.Tests
                 Street = "New Street",
                 Header = "New Header",
                 StaffCount = 150,
-                CountryId = 1,
+                CountryId = 3,
                 Website = "http://newcompany.com",
                 Email = "info@newcompany.com",
                 Edrpou = 56781234
@@ -204,7 +204,7 @@ namespace CompanyWebApp.Tests
                 Street = "New Street",
                 Header = "New Header",
                 StaffCount = 150,
-                CountryId = 1,
+                CountryId = 3,
                 Website = "http://newcompany.com",
                 Email = "info@newcompany.com",
                 Edrpou = 56781234

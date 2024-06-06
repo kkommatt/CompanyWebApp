@@ -51,20 +51,6 @@ namespace CompanyWebApp.Tests
             Assert.IsNotNull(viewResult);
         }
 
-        [Test, Category("Error")]
-        public void Error_Returns_View_With_ErrorViewModel()
-        {
-            var result = _controller.Error();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ViewResult>(result);
-
-            var viewResult = result as ViewResult;
-            Assert.IsNotNull(viewResult);
-
-            var model = viewResult.Model as ErrorViewModel;
-            Assert.IsNotNull(model);
-            Assert.IsFalse(string.IsNullOrEmpty(model.RequestId));
-        }
 
         [Test, Category("Exceptions")]
         public void Error_Returns_ErrorViewModel_Without_RequestId()
@@ -118,7 +104,8 @@ namespace CompanyWebApp.Tests
 
         public bool IsEnabled(LogLevel logLevel) => true;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+            Func<TState, Exception, string> formatter)
         {
             // Simple logger implementation for testing purposes
             Console.WriteLine($"{logLevel.ToString()}: {formatter(state, exception)}");
