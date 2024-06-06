@@ -95,7 +95,7 @@ namespace CompanyWebApp.Tests
             _controller = new CitizensController(_context);
         }
 
-        [Test]
+        [Test, Category("Index")]
         public async Task Index_Returns_View_With_Citizens()
         {
             var result = await _controller.Index();
@@ -110,7 +110,7 @@ namespace CompanyWebApp.Tests
             Assert.IsNotEmpty(model);
         }
 
-        [Test]
+        [Test, Category("Create")]
         public void Create_Returns_View()
         {
             var result = _controller.Create();
@@ -118,7 +118,7 @@ namespace CompanyWebApp.Tests
             Assert.IsInstanceOf<ViewResult>(result);
         }
 
-        [Test]
+        [Test, Category("Create")]
         public async Task Create_Post_Valid_Citizen()
         {
             var newCitizen = new Citizen
@@ -142,7 +142,7 @@ namespace CompanyWebApp.Tests
             Assert.AreEqual(4, citizens.Count);
         }
 
-        [Test]
+        [Test, Category("Create")]
         public void Create_Post_Invalid_Citizen()
         {
             var newCitizen = new Citizen
@@ -171,7 +171,7 @@ namespace CompanyWebApp.Tests
             Assert.IsNotNull(model);
         }
 
-        [Test]
+        [Test, Category("Edit")]
         public async Task Edit_Returns_View_For_Valid_Id()
         {
             var result = await _controller.Edit(1);
@@ -186,14 +186,14 @@ namespace CompanyWebApp.Tests
             Assert.AreEqual(1, model.Id);
         }
 
-        [Test]
+        [Test, Category("Edit")]
         public void Edit_Returns_NotFound_For_Invalid_Id()
         {
             var result = _controller.Edit(null).Result;
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
-        [Test]
+        [Test, Category("Edit")]
         public async Task Edit_Post_Valid_Citizen()
         {
             var citizen = await _context.Citizens.FirstOrDefaultAsync(c => c.Id == 1);
@@ -206,7 +206,7 @@ namespace CompanyWebApp.Tests
             Assert.AreEqual("John Smith", updatedCitizen.FullName);
         }
 
-        [Test]
+        [Test, Category("Edit")]
         public void Edit_Post_Invalid_Citizen()
         {
             var citizen = new Citizen
@@ -236,14 +236,14 @@ namespace CompanyWebApp.Tests
             Assert.IsNotNull(model);
         }
 
-        [Test]
+        [Test, Category("Delete")]
         public void Delete_Returns_NotFound_For_Invalid_Id()
         {
             var result = _controller.Delete(null).Result;
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
-        [Test]
+        [Test, Category("Delete")]
         public async Task Delete_Returns_View_For_Valid_Id()
         {
             var result = await _controller.Delete(3);
@@ -258,7 +258,7 @@ namespace CompanyWebApp.Tests
             Assert.AreEqual(3, model.Id);
         }
 
-        [Test]
+        [Test, Category("Delete")]
         public async Task DeleteConfirmed_Deletes_Citizen()
         {
             var result = await _controller.DeleteConfirmed(3);

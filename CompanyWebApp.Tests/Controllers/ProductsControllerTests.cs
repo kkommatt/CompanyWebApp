@@ -135,7 +135,7 @@ namespace CompanyWebApp.Tests
             Assert.IsNotNull(ex);
         }
 
-        [Test, Category("Parameterized")]
+        [Test, Category("Edit")]
         [TestCase(1)]
         [TestCase(2)]
         public async Task Edit_Returns_Correct_Product(int productId)
