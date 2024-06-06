@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 namespace CompanyWebApp.Tests
 {
     [TestFixture]
-    [Category("HomeControllerTests")]
     public class HomeControllerTests
     {
         private HomeController _controller;

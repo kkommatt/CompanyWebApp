@@ -10,7 +10,6 @@ using System.Data.SqlClient;
 namespace CompanyWebApp.Tests
 {
     [TestFixture]
-    [Category("UnitTests")]
     public class CountriesControllerTests
     {
         private CountriesController _controller;

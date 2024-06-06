@@ -9,7 +9,6 @@ using CompanyWebApp.Models;
 namespace CompanyWebApp.Tests
 {
     [TestFixture]
-    [Category("UnitTests")]
     public class CompaniesControllerTests
     {
         private CompaniesController _controller;

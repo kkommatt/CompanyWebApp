@@ -6,14 +6,16 @@
     <nunit>
         <settings>
             <setting name="DefaultTestCaseTimeout" value="30000"/>
-            <setting name="NumberOfTestWorkers" value="1"/>
+            <setting name="NumberOfTestWorkers" value="4"/>
         </settings>
         <test-runner>netcore</test-runner>
         <test-suites>
             <test-suite>
-                <include>
-                    <category>ProductsControllerTests</category>
-                </include>
+                <exclude>
+                    <category>Create</category>
+                    <category>Delete</category>
+                    <category>Index</category>
+                </exclude>
             </test-suite>
         </test-suites>
     </nunit>

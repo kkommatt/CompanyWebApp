@@ -12,7 +12,6 @@ using CompanyWebApp.Models;
 namespace CompanyWebApp.Tests
 {
     [TestFixture]
-    [Category("ProductsControllerTests")]
     public class ProductsControllerTests
     {
         private ProductsController _controller;

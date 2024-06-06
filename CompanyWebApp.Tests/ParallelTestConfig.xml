@@ -12,11 +12,10 @@
         <test-suites>
             <test-suite>
                 <include>
-                    <category>ProductsControllerTests</category>
+                    <category>Create</category>
+                    <category>Delete</category>
+                    <category>Index</category>
                 </include>
-                <exclude>
-                    <category>Exceptions</category>
-                </exclude>
             </test-suite>
         </test-suites>
     </nunit>
